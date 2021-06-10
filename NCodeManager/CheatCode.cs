@@ -77,12 +77,12 @@ namespace NCodeManager
 
                 string[] instruction = line.Split(' ');
                 if (instruction.Length != 2)
-                    throw new Exception("Invalid code");
+                    throw new Exception("Invalid code: Bad input");
 
                 uint address;
                 uint data;
                 if (!HexStringToUInt(instruction[0], out address) || !HexStringToUInt(instruction[1], out data))
-                    throw new Exception("Invalid code");
+                    throw new Exception("Invalid code: Input is not hexadecimal");
 
                 Instructions.Add((address, data));
             }
@@ -94,23 +94,30 @@ namespace NCodeManager
 
             var binaryReader = new BinaryReader(stream);
 
-            if (stream.Length < 8)
-                throw new Exception("Could not read GCT");
+            if (stream.Length == 0 || stream.Length % 8 != 0)
+                throw new Exception("Could not read GCT: Bad size");
 
             if (ReadUIntSwappedEndianness(binaryReader) != 0x00D0C0DE || 
                 ReadUIntSwappedEndianness(binaryReader) != 0x00D0C0DE)
-                throw new Exception("Could not read GCT");
+                throw new Exception("Could not read GCT: Missing start instruction");
 
-            while (stream.Length - stream.Position >= 8)
+            bool endFound = false;
+            while (stream.Position != stream.Length)
             {
                 uint address = ReadUIntSwappedEndianness(binaryReader);
                 uint data = ReadUIntSwappedEndianness(binaryReader);
 
                 if (address == 0xF0000000 && data == 0x00000000)
+                {
+                    endFound = true;
                     break;
+                }
 
                 Instructions.Add((address, data));
             }
+
+            if (!endFound)
+                throw new Exception("Could not read GCT: Missing end instruction");
         }
 
         public static void WriteGCT(Stream stream, CheckedListBox.CheckedItemCollection codesList)

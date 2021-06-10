@@ -35,16 +35,19 @@ namespace NCodeManager
             if (CodeManagerOpenFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
+            Stream stream = null;
             try
             {
-                var data = File.OpenRead(CodeManagerOpenFileDialog.FileName);
-                CodesList.Items.Add(new CheatCode("Imported GCT Code", data), true);
-                data.Close();
+                stream = File.OpenRead(CodeManagerOpenFileDialog.FileName);
+                CodesList.Items.Add(new CheatCode("Imported GCT Code", stream), true);
             }
             catch (Exception exception)
             {
                 MessageBox.Show(string.Format("ERROR: {0}", exception.Message));
             }
+
+            if (stream != null)
+                stream.Close();
         }
 
         private void OnCodesListItemSelected(object sender, EventArgs e)
@@ -83,16 +86,19 @@ namespace NCodeManager
             if (CodeManagerSaveFileDialog.ShowDialog() != DialogResult.OK)
                 return;
 
+            Stream stream = null;
             try
             {
-                var stream = File.OpenWrite(CodeManagerSaveFileDialog.FileName);
+                stream = File.OpenWrite(CodeManagerSaveFileDialog.FileName);
                 CheatCode.WriteGCT(stream, CodesList.CheckedItems);
-                stream.Close();
             }
             catch (Exception exception)
             {
                 MessageBox.Show(string.Format("ERROR: {0}", exception.Message));
             }
+
+            if (stream != null)
+                stream.Close();
         }
 
         private void OnRemoveCodeClick(object sender, EventArgs e)
