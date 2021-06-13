@@ -43,7 +43,7 @@ namespace NCodeManager
             }
             catch (Exception exception)
             {
-                MessageBox.Show(string.Format("ERROR: {0}", exception.Message));
+                MessageBox.Show(string.Format("ERROR: Could not read GCT: {0}", exception.Message));
             }
 
             if (stream != null)
@@ -75,7 +75,7 @@ namespace NCodeManager
             }
             catch (Exception exception)
             {
-                MessageBox.Show(string.Format("ERROR: {0}", exception.Message));
+                MessageBox.Show(string.Format("ERROR: Invalid code: {0}", exception.Message));
             }
 
             CodesList.EndUpdate();

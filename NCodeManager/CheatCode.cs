@@ -64,8 +64,9 @@ namespace NCodeManager
         public void Parse(string instructionsString)
         {
             Instructions.Clear();
-
+            
             var stringReader = new StringReader(instructionsString);
+            int lineNumber = 1;
             while (true)
             {
                 string line = stringReader.ReadLine();
@@ -77,14 +78,16 @@ namespace NCodeManager
 
                 string[] instruction = line.Split(' ');
                 if (instruction.Length != 2)
-                    throw new Exception("Invalid code: Bad input");
+                    throw new Exception(string.Format("Bad syntax (line #{0})", lineNumber));
 
                 uint address;
                 uint data;
                 if (!HexStringToUInt(instruction[0], out address) || !HexStringToUInt(instruction[1], out data))
-                    throw new Exception("Invalid code: Input is not hexadecimal");
+                    throw new Exception(string.Format("Input is not hexadecimal (line #{0})", lineNumber));
 
                 Instructions.Add((address, data));
+
+                ++lineNumber;
             }
         }
 
@@ -95,11 +98,11 @@ namespace NCodeManager
             var binaryReader = new BinaryReader(stream);
 
             if (stream.Length == 0 || stream.Length % 8 != 0)
-                throw new Exception("Could not read GCT: Bad size");
+                throw new Exception("Bad size");
 
             if (ReadUIntSwappedEndianness(binaryReader) != 0x00D0C0DE || 
                 ReadUIntSwappedEndianness(binaryReader) != 0x00D0C0DE)
-                throw new Exception("Could not read GCT: Missing start instruction");
+                throw new Exception("Missing start instruction");
 
             bool endFound = false;
             while (stream.Position != stream.Length)
@@ -117,7 +120,7 @@ namespace NCodeManager
             }
 
             if (!endFound)
-                throw new Exception("Could not read GCT: Missing end instruction");
+                throw new Exception("Missing end instruction");
         }
 
         public static void WriteGCT(Stream stream, CheckedListBox.CheckedItemCollection codesList)
