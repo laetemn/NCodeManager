@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("NCodeManager")]
 [assembly: AssemblyDescription("Gecko Code Manager")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("nat8badf00d")]
+[assembly: AssemblyCompany("Natalie")]
 [assembly: AssemblyProduct("NCodeManager")]
 [assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
